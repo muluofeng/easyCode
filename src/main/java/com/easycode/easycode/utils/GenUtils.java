@@ -51,7 +51,7 @@ public class GenUtils {
     }
 
     @SneakyThrows
-    public static List<String> getTemplates(boolean onlyBackend, boolean generatorServiceInterface) {
+    public static List<String> getTemplates(boolean onlyBackend, boolean generatorServiceInterface,Boolean generatorController) {
         String templatePath = "template";
         Resource resource = new ClassPathResource(templatePath);
         File file = resource.getFile();
@@ -63,6 +63,10 @@ public class GenUtils {
             }
             if (onlyBackend) {
                 templates.removeIf(t -> t.startsWith("front"));
+            }
+            if(!generatorController){
+                templates.removeIf(t -> t.contains("backend/Controller.java.ftl"));
+                templates.removeIf(t -> t.contains("backend/dto/PageReqDTO.java.ftl"));
             }
             return templates;
         }
@@ -153,11 +157,14 @@ public class GenUtils {
         boolean generatorServiceInterface = config.getBoolean("serviceInterface");
         //是否生成
         boolean onlyBackend = config.getBoolean("onlyBackend");
+        //生成 generatorController 代码
+        boolean generatorController = config.getBoolean("generatorController");
 
         String daoSuffix = StringUtils.isNotBlank(config.getString("daoSuffix")) ? config.getString("daoSuffix") : "Dao";
         map.put("daoSuffix", daoSuffix);
         map.put("daoLowerSuffix", StringUtils.uncapitalize(daoSuffix));
         map.put("openLombok", openLombok);
+        map.put("generatorController", generatorController);
         map.put("generatorServiceInterface", generatorServiceInterface);
         map.put("openDoc", openDoc);
         map.put("openShiro", openShiro);
@@ -177,7 +184,8 @@ public class GenUtils {
 
 
         // 获取模板列表
-        List<String> templates = getTemplates(onlyBackend, generatorServiceInterface);
+        List<String> templates = getTemplates(onlyBackend, generatorServiceInterface,generatorController);
+
         for (String template : templates) {
             // 渲染模板
             try (StringWriter sw = new StringWriter()) {
@@ -195,6 +203,7 @@ public class GenUtils {
                     //todo 执行sql
                     continue;
                 }
+
 
                 Boolean isBackend = isBackendTemplate(template);
 

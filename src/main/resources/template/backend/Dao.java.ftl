@@ -1,9 +1,11 @@
 package ${package}.${moduleName}.${daoLowerSuffix};
 
 import ${package}.${moduleName}.entity.${className};
-import  ${package}.${moduleName}.dto.${className}ListDTO;
 
+<#if generatorController>
+import  ${package}.${moduleName}.dto.${className}ListDTO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+</#if>
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * ${comments}
@@ -13,5 +15,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @date ${datetime}
  */
 public interface ${className}${daoSuffix} extends BaseMapper<${className}> {
+<#if generatorController>
     Page<${className}ListDTO> queryByPage(Page<?> page);
+</#if>
 }

@@ -3,16 +3,17 @@
 
 <mapper namespace="${package}.${moduleName}.${daoLowerSuffix}.${className}${daoSuffix}">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+
     <resultMap type="${package}.${moduleName}.entity.${className}" id="${classLowerName}Map">
     <#list columns as column>
             <result property="${column.attrLowerName}" column="${column.columnName}"/>
     </#list>
     </resultMap>
-
+    <#if generatorController>
     <select id="queryByPage" resultType="${package}.${moduleName}.dto.${className}ListDTO">
         SELECT
          *
         FROM ${tableName}
     </select>
+    </#if>
 </mapper>

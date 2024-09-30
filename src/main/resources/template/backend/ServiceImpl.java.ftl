@@ -25,7 +25,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}${daoSuffix
     @Autowired
     private ${className}Convert convert;
 
-
+<#if generatorController>
     @Override
     public ${baseResponsePageClassName}<${className}ListDTO> queryByPage(${className}PageReqDTO pageReq) {
         Page<${className}ListDTO> page = new Page<>(pageReq.getCurrentPage(), pageReq.getPageSize());
@@ -58,5 +58,5 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}${daoSuffix
     public void batchDelete(List<${pk.attrType}> ids){
         removeByIds(ids);
     }
-      
+</#if>
 }

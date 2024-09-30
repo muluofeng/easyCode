@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import ${package}.${moduleName}.dao.${className}Dao;
+import ${package}.${moduleName}.${daoLowerSuffix}.${className}${daoSuffix};
 import ${package}.${moduleName}.entity.${className};
 import ${package}.${moduleName}.service.${className}Service;
 import ${package}.${moduleName}.convert.${className}Convert;
@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Service
-public class ${className}ServiceImpl extends ServiceImpl<${className}Dao, ${className}> implements ${className}Service {
+public class ${className}ServiceImpl extends ServiceImpl<${className}${daoSuffix}, ${className}> implements ${className}Service {
 
     @Autowired
     private ${className}Convert convert;

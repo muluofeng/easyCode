@@ -44,7 +44,7 @@ public class GenUtils {
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             return paths.filter(Files::isRegularFile).map(f -> {
                         String filePathName = f.toString();
-                        return  StringUtils.substring(filePathName, filePathName.indexOf(path) + path.length()+1);
+                        return StringUtils.substring(filePathName, filePathName.indexOf(path) + path.length() + 1);
                     })
                     .collect(Collectors.toList());
         }
@@ -154,6 +154,9 @@ public class GenUtils {
         //是否生成
         boolean onlyBackend = config.getBoolean("onlyBackend");
 
+        String daoSuffix = StringUtils.isNotBlank(config.getString("daoSuffix")) ? config.getString("daoSuffix") : "Dao";
+        map.put("daoSuffix", daoSuffix);
+        map.put("daoLowerSuffix", StringUtils.uncapitalize(daoSuffix));
         map.put("openLombok", openLombok);
         map.put("generatorServiceInterface", generatorServiceInterface);
         map.put("openDoc", openDoc);
@@ -182,7 +185,8 @@ public class GenUtils {
                 freemarker.template.Template tp = configuration.getTemplate(template, "UTF-8");
                 tp.process(map, sw);
 
-                String fileName = getFileName(template, tableEntity.getClassName(), config.getString("package"), config.getString("moduleName"), openFrontLowercase);
+                String fileName = getFileName(template, tableEntity.getClassName(), config.getString("package"), config.getString("moduleName"),
+                        daoSuffix, openFrontLowercase);
 
                 File file = new File(fileName);
 
@@ -288,8 +292,14 @@ public class GenUtils {
     /**
      * 获取文件名
      */
-    public static String getFileName(String template, String className, String packageName, String moduleName, boolean openFrontLowercase) {
+    public static String getFileName(String template,
+            String className,
+            String packageName,
+            String moduleName,
+            String daoSuffix,
+            boolean openFrontLowercase) {
         String packagePath = "src" + File.separator + "main" + File.separator + "java" + File.separator;
+        String daoLowerSuffix = StringUtils.uncapitalize(daoSuffix);
         if (StringUtils.isNotBlank(packageName)) {
             packagePath += packageName.replace(".", File.separator) + File.separator + moduleName + File.separator;
         }
@@ -299,7 +309,7 @@ public class GenUtils {
         }
 
         if (template.contains("Dao.java.ftl")) {
-            return packagePath + "Mapper" + File.separator + className + "Mapper.java";
+            return packagePath + daoLowerSuffix + File.separator + className + daoSuffix + ".java";
         }
 
         if (template.contains("Service.java.ftl")) {
@@ -315,7 +325,7 @@ public class GenUtils {
         }
 
         if (template.contains("Dao.xml.ftl")) {
-            return "src" + File.separator + "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName + File.separator + className + "Mapper.xml";
+            return "src" + File.separator + "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName + File.separator + className + daoSuffix + ".xml";
         }
 
         if (template.contains("CreateUpdateDTO.java.ftl")) {

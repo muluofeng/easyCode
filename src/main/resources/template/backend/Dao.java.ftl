@@ -1,4 +1,4 @@
-package ${package}.${moduleName}.dao;
+package ${package}.${moduleName}.${daoLowerSuffix};
 
 import ${package}.${moduleName}.entity.${className};
 import  ${package}.${moduleName}.dto.${className}ListDTO;
@@ -12,6 +12,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @email ${email}
  * @date ${datetime}
  */
-public interface ${className}Dao extends BaseMapper<${className}> {
+public interface ${className}${daoSuffix} extends BaseMapper<${className}> {
     Page<${className}ListDTO> queryByPage(Page<?> page);
 }

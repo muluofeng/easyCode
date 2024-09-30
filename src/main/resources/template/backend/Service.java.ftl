@@ -18,7 +18,7 @@ import ${baseResponsePageClass};
 <#if !generatorServiceInterface>
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import ${package}.${moduleName}.dao.${className}Dao;
+import ${package}.${moduleName}.${daoLowerSuffix}.${className}${daoSuffix};
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public interface ${className}Service extends IService<${className}> {
 <#else>
 @Service("${classLowerName}Service")
-public class ${className}Service extends ServiceImpl<${className}Dao, ${className}> {
+public class ${className}Service extends ServiceImpl<${className}${daoSuffix}, ${className}> {
 <#if generatorServiceInterface>
 <#else>
     @Autowired

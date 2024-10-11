@@ -7,7 +7,6 @@ var vm = new Vue({
 			email:"xxx@qq.com",
 			tablePrefix:"",
 			openLombok:true,
-			openSwagger:true,
 			openDoc:"",
 			serviceInterface:true,
 			onlyBackend:false,
@@ -24,7 +23,7 @@ var vm = new Vue({
 				type: "GET",//方法类型
 				contentType: "application/json",
 				dataType: "json",//预期服务器返回的数据类型
-				url: "/sys/generator/getconfig" ,//url
+				url: "/generator/getconfig" ,//url
 				success: function (result) {
 					vm.configData = result.config;
 				},
@@ -41,7 +40,7 @@ var vm = new Vue({
 				type: "POST",//方法类型
 				contentType: "application/json",
 				dataType: "json",//预期服务器返回的数据类型
-				url: "/sys/generator/config" ,//url
+				url: "/generator/config" ,//url
 				data: JSON.stringify(vm.configData),
 				success: function (result) {
 					console.log(result);//打印服务端返回的数据(调试用)

@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: 'sys/generator/list',
+        url: '/generator/list',
         datatype: "json",
         colModel: [			
 			{ label: '表名', name: 'tableName', width: 100, key: true },
@@ -76,7 +76,7 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "json",//预期服务器返回的数据类型
                 data: JSON.stringify(datas),
-                url: "/sys/generator/codeToDirect",
+                url: "/generator/codeToDirect",
                 success: function (result) {
                     alert("操作成功");
                 },

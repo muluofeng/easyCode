@@ -8,8 +8,10 @@ import com.muluofeng.easycode.core.utils.R;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,12 +31,14 @@ import java.util.stream.Collectors;
  * 代码生成器
  */
 @Controller
-@RequestMapping("/sys/generator")
+@RequestMapping("/generator")
+@RequiredArgsConstructor
 public class SysGeneratorController {
     @Resource
     org.apache.commons.configuration.Configuration easyCodePropertiesConfiguration;
     @Autowired
     private SysGeneratorService sysGeneratorService;
+    private final ResourceLoader resourceLoader;
 
     /**
      * 列表

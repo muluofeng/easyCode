@@ -30,6 +30,7 @@
             <groupId>com.muluofeng.easy-code</groupId>
             <artifactId>springboot-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

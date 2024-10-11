@@ -1,5 +1,6 @@
 package com.muluofeng.easycode.core.utils;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.muluofeng.easycode.core.entity.ColumnEntity;
 import com.muluofeng.easycode.core.entity.TableEntity;
 import freemarker.template.TemplateException;
@@ -14,8 +15,11 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +43,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class GenUtils {
 
-
     static List<String> walk(String templatePath, String path) throws Exception {
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             return paths.filter(Files::isRegularFile).map(f -> {
@@ -51,27 +54,54 @@ public class GenUtils {
     }
 
     @SneakyThrows
-    public static List<String> getTemplates(boolean onlyBackend, boolean generatorServiceInterface,Boolean generatorController) {
+    public static List<String> getTemplatesByFile() {
         String templatePath = "template";
         Resource resource = new ClassPathResource(templatePath);
         File file = resource.getFile();
         boolean directory = file.isDirectory();
         if (directory) {
-            List<String> templates = walk(templatePath, file.getPath());
-            if (!generatorServiceInterface) {
-                templates.removeIf(t -> t.contains("backend/ServiceImpl.java.ftl"));
-            }
-            if (onlyBackend) {
-                templates.removeIf(t -> t.startsWith("front"));
-            }
-            if(!generatorController){
-                templates.removeIf(t -> t.contains("backend/Controller.java.ftl"));
-                templates.removeIf(t -> t.contains("backend/dto/PageReqDTO.java.ftl"));
-            }
-            return templates;
+            return walk(templatePath, file.getPath());
         }
         return Lists.newArrayList();
     }
+
+
+    @SneakyThrows
+    public static List<String> getTemplates(boolean onlyBackend, boolean generatorServiceInterface, Boolean generatorController) {
+        ApplicationContext applicationContext = SpringUtil.getApplicationContext();
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(applicationContext);
+        Resource[] resources = resolver.getResources("classpath:/template/**");
+        Class<? extends Resource> aClass = resources[0].getClass();
+        List<String> templates;
+        if (aClass == FileSystemResource.class) {
+            templates = getTemplatesByFile();
+        } else {
+            templates = getTemplatesByClasspath(resources);
+        }
+        if (!generatorServiceInterface) {
+            templates.removeIf(t -> t.contains("backend/ServiceImpl.java.ftl"));
+        }
+        if (onlyBackend) {
+            templates.removeIf(t -> t.startsWith("front"));
+        }
+        if (!generatorController) {
+            templates.removeIf(t -> t.contains("backend/Controller.java.ftl"));
+            templates.removeIf(t -> t.contains("backend/dto/PageReqDTO.java.ftl"));
+        }
+        return templates;
+    }
+
+    @SneakyThrows
+    private static List<String> getTemplatesByClasspath(Resource[] resources) {
+        List<Resource> filterResources = Arrays.stream(resources).filter((f) -> {
+            return !((ClassPathResource) f).getPath().endsWith("/");
+        }).toList();
+        return filterResources.stream().map((f) -> {
+            String path = ((ClassPathResource) f).getPath();
+            return StringUtils.substring(path, path.indexOf("template/") + "template/".length());
+        }).collect(Collectors.toList());
+    }
+
 
     /**
      * 生成代码
@@ -184,7 +214,7 @@ public class GenUtils {
 
 
         // 获取模板列表
-        List<String> templates = getTemplates(onlyBackend, generatorServiceInterface,generatorController);
+        List<String> templates = getTemplates(onlyBackend, generatorServiceInterface, generatorController);
 
         for (String template : templates) {
             // 渲染模板
@@ -382,7 +412,8 @@ public class GenUtils {
      * @param table
      * @param columns
      */
-    public static void generatorCodeToDirect(Configuration configuration, Map<String, String> table, List<Map<String, String>> columns) {
+    public static void generatorCodeToDirect(Configuration configuration, Map<String, String> table, List<Map<String,
+            String>> columns) {
         try {
             generatorCode(configuration, table, columns, null);
         } catch (IOException | TemplateException e) {

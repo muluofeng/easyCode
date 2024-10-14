@@ -5,19 +5,20 @@
 	<select id="queryList" resultType="map">
 		select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables 
 			where table_schema = (select database()) 
-		<if test="tableName != null and tableName.trim() != ''">
-			and table_name like concat('%', #{tableName}, '%') 
+		<if test="req.tableName != null and req.tableName.trim() != ''">
+			and table_name like concat('%', #{req.tableName}, '%')
 		</if>
 		order by create_time desc
-		<if test="offset != null and limit != null">
-			limit #{offset}, #{limit}
+		<if test="req.offset != null and req.limit != null">
+			limit #{req.offset}, #{req.limit}
 		</if>
 	</select>
 	
 	<select id="queryTotal" resultType="int">
 		select count(*) from information_schema.tables where table_schema = (select database())
-		<if test="tableName != null and tableName.trim() != ''">
-			and table_name like concat('%', #{tableName}, '%') 
+		<if test="req.tableName != null and req.tableName.trim() != ''">
+			 <bind name="kk" value="'%' + req.tableName + '%'"/>
+			and table_name like #{kk}
 		</if> 
 	</select> 
 	

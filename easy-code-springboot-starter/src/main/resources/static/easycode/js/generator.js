@@ -39,23 +39,35 @@ var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		q:{
-			tableName: null
-		}
+			tableName: null,
+            dataSource:''
+		},
+        dataSources:{}
 	},
+    mounted: function(){
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            contentType: "application/json",
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/generator/dataSources",
+            success: function (result) {
+                vm.dataSources = result.dataSources
+            },
+            error : function(result) {
+                console.log(result)
+                alert("异常！");
+            }
+        });
+    },
 	methods: {
 		query: function () {
 			$("#jqGrid").jqGrid('setGridParam',{ 
-                postData:{'tableName': vm.q.tableName},
+                postData:{'tableName': vm.q.tableName,'dataSource':vm.q.dataSource},
                 page:1 
             }).trigger("reloadGrid");
 		},
-		generator: function() {
-			var tableNames = getSelectedRows();
-			if(tableNames == null){
-				return ;
-			}
-			location.href = "sys/generator/code?tables=" + JSON.stringify(tableNames);
-		},
+
         generatorToDirect:function(){
             var tableNames = getSelectedRows();
             if(tableNames == null){
@@ -70,12 +82,16 @@ var vm = new Vue({
             console.log(JSON.stringify(tableNames))
             console.log(datas)
             console.log(JSON.stringify(datas))
+            var reqData = {
+                "tableNames":datas,
+                "dataSource": vm.q.dataSource
+            }
             $.ajax({
                 //几个参数需要注意一下
                 type: "POST",//方法类型
                 contentType: "application/json",
                 dataType: "json",//预期服务器返回的数据类型
-                data: JSON.stringify(datas),
+                data: JSON.stringify(reqData),
                 url: "/generator/codeToDirect",
                 success: function (result) {
                     alert("操作成功");

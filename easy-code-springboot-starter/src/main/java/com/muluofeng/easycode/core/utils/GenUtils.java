@@ -116,7 +116,7 @@ public class GenUtils {
         // 表信息
         TableEntity tableEntity = new TableEntity();
         tableEntity.setTableName(table.get("tableName"));
-        tableEntity.setComments(table.get("tableComment"));
+        tableEntity.setComments(table.get("tableComment").trim());
         // 表名转换成Java类名
         String className = tableToJava(tableEntity.getTableName(), config.getStringArray("tablePrefix"));
         tableEntity.setClassName(className);
@@ -128,7 +128,7 @@ public class GenUtils {
             ColumnEntity columnEntity = new ColumnEntity();
             columnEntity.setColumnName(column.get("columnName"));
             columnEntity.setDataType(column.get("dataType"));
-            columnEntity.setComments(column.get("columnComment"));
+            columnEntity.setComments(StringUtils.strip(column.get("columnComment"),"\n")  );
             columnEntity.setExtra(column.get("extra"));
 
             // 列名转换成Java属性名

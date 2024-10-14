@@ -32,6 +32,12 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <version>${dynamic-ds.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,6 +1,8 @@
 package com.muluofeng.easycode.core.dao;
 
+import com.muluofeng.easycode.core.dto.SearchTableDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -11,9 +13,9 @@ import java.util.Map;
 @Mapper
 public interface SysGeneratorDao {
 
-	List<Map<String, Object>> queryList(Map<String, Object> map);
+	List<Map<String, Object>> queryList(@Param("req") SearchTableDTO req);
 
-	int queryTotal(Map<String, Object> map);
+	int queryTotal(@Param("req") SearchTableDTO req);
 
 	Map<String, String> queryTable(String tableName);
 

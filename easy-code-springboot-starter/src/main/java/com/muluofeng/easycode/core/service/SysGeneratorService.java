@@ -33,24 +33,26 @@ public class SysGeneratorService {
     private DataSource dataSource;
     public static final String masterSourceKey = "master";
 
-    private  List<DataSourceDTO> dynamicDataSources = new ArrayList<>();
-    private  List<String> dynamicDataSourceKeys = new ArrayList<>();
+    private List<DataSourceDTO> dynamicDataSources = new ArrayList<>();
+    private List<String> dynamicDataSourceKeys = new ArrayList<>();
+    public static String dynamicDataSourceContextHolderClassName = "com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder";
+    public static String dynamicRoutingDataSourceClassName = "com.baomidou.dynamic.datasource.DynamicRoutingDataSource";
 
     @PostConstruct
     public void initDataSource() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String dataSourceName = dataSource.getClass().getName();
 
-        if (dataSourceName.equals("com.baomidou.dynamic.datasource.DynamicRoutingDataSource")) {
+        if (dataSourceName.equals(dynamicRoutingDataSourceClassName)) {
             // 使用反射加载 DynamicRoutingDataSource 类
-            Class<?> dynamicRoutingDataSourceClass = Class.forName("com.baomidou.dynamic.datasource.DynamicRoutingDataSource");
+            Class<?> dynamicRoutingDataSourceClass = Class.forName(dynamicRoutingDataSourceClassName);
             if (dynamicRoutingDataSourceClass.isInstance(dataSource)) {
                 // 强制转换为 DynamicRoutingDataSource，并获取数据源
                 Object dynamicRoutingDataSource = dynamicRoutingDataSourceClass.cast(dataSource);
                 Method getDataSourcesMethod = dynamicRoutingDataSourceClass.getMethod("getDataSources");
                 Map<String, DataSource> dataSources = (Map<String, DataSource>) getDataSourcesMethod.invoke(dynamicRoutingDataSource);
-                dynamicDataSources = dataSources.keySet().stream().map(key ->
-                        DataSourceDTO.builder().sourceKey(key).sourceName(key +"数据源").build()).toList();
-                 dynamicDataSourceKeys = dynamicDataSources.stream().map(DataSourceDTO::getSourceKey).toList();
+                dynamicDataSources = dataSources.keySet().stream()
+                        .map(key -> DataSourceDTO.builder().sourceKey(key).sourceName(key + "数据源").build()).toList();
+                dynamicDataSourceKeys = dynamicDataSources.stream().map(DataSourceDTO::getSourceKey).toList();
             }
         }
     }
@@ -135,7 +137,7 @@ public class SysGeneratorService {
     }
 
     public List<DataSourceDTO> getDataSources() {
-        if(CollUtil.isNotEmpty(dynamicDataSources)){
+        if (CollUtil.isNotEmpty(dynamicDataSources)) {
             return dynamicDataSources;
         }
         DataSourceDTO defaultSource = DataSourceDTO.builder().sourceName("默认数据数据源").sourceKey(masterSourceKey).build();
@@ -144,18 +146,18 @@ public class SysGeneratorService {
 
     @SneakyThrows
     public void changeDataSource(String dataSourceKey) {
-        if(CollUtil.isNotEmpty(dynamicDataSources) && dynamicDataSourceKeys.contains(dataSourceKey)) {
-            Class<?> dynamicRoutingDataSource = Class.forName("com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder");
+        if (CollUtil.isNotEmpty(dynamicDataSources) && dynamicDataSourceKeys.contains(dataSourceKey)) {
+            Class<?> dynamicRoutingDataSource = Class.forName(dynamicDataSourceContextHolderClassName);
 
             Method method = dynamicRoutingDataSource.getDeclaredMethod("push", String.class);
-            method.invoke(null,dataSourceKey);
+            method.invoke(null, dataSourceKey);
         }
     }
 
     @SneakyThrows
     public void changeAfterDataSource(String dataSourceKey) {
-        if(CollUtil.isNotEmpty(dynamicDataSources) && dynamicDataSourceKeys.contains(dataSourceKey)) {
-            Class<?> dynamicRoutingDataSource = Class.forName("com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder");
+        if (CollUtil.isNotEmpty(dynamicDataSources) && dynamicDataSourceKeys.contains(dataSourceKey)) {
+            Class<?> dynamicRoutingDataSource = Class.forName(dynamicDataSourceContextHolderClassName);
             Method method = dynamicRoutingDataSource.getDeclaredMethod("poll");
             method.invoke(null);
 

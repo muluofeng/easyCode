@@ -101,6 +101,13 @@
             <version>${mysql.version}</version>
         </dependency>
 
+        <!-- 多数据源依赖 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <version>${dynamic-ds.version}</version>
+            <optional>true</optional>
+        </dependency>
 
     </dependencies>
 
